@@ -4,13 +4,11 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowUp
@@ -19,7 +17,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -27,6 +24,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
+import com.watsonlogic.nickwalkerfans.feed.datasource.InstagramDataSource
+import com.watsonlogic.nickwalkerfans.feed.datasource.YouTubeDataSource
+import com.watsonlogic.nickwalkerfans.feed.repository.FeedRepository
+import com.watsonlogic.nickwalkerfans.feed.repository.FeedRepositoryImpl
+import com.watsonlogic.nickwalkerfans.feed.viewmodel.FeedViewModel
 import com.watsonlogic.nickwalkerfans.ui.theme.NickWalkerFansTheme
 import kotlinx.coroutines.launch
 
@@ -44,13 +46,12 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun AppBar() {
-//    TopAppBar(title = {
-//        Text(text = stringResource(id = R.string.app_name))
-//    })
 
     TopAppBar {
         Row(
-            modifier = Modifier.fillMaxWidth().padding(end = 16.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(end = 16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -66,7 +67,6 @@ fun AppBar() {
                 style = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.ExtraBold)
             )
         }
-
     }
 }
 
@@ -87,6 +87,21 @@ fun ScrollToTopFab(scrollState: LazyListState) {
 
 @Composable
 fun App() {
+
+    FeedScreen()
+}
+
+@Composable
+fun FeedScreen(
+    viewModel: FeedViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
+        factory = FeedViewModel.FeedViewModelFactory(
+            FeedRepositoryImpl(
+                YouTubeDataSource(),
+                InstagramDataSource()
+            )
+        )
+    )
+) {
 
     val lazyListScrollState = rememberLazyListState()
 
