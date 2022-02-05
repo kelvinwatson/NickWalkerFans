@@ -1,4 +1,10 @@
 package com.watsonlogic.nickwalkerfans.feed.datasource
 
-class YouTubeDataSource {
+import com.watsonlogic.nickwalkerfans.feed.model.Content
+import kotlinx.coroutines.flow.Flow
+
+class YouTubeDataSource : RemoteDataSource {
+    override fun getContent(): Flow<Content> {
+        TODO("Not yet implemented")
+    }
 }

@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.watsonlogic.nickwalkerfans.feed.repository.FeedRepository
-import com.watsonlogic.nickwalkerfans.model.UiState
+import com.watsonlogic.nickwalkerfans.feed.model.UiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -26,7 +26,5 @@ class FeedViewModel(private val repository: FeedRepository) : ViewModel() {
     class FeedViewModelFactory(private val repository: FeedRepository) : ViewModelProvider.Factory {
         override fun <T : ViewModel?> create(modelClass: Class<T>): T =
             FeedViewModel(repository) as T
-//            modelClass.getConstructor(FeedRepository::class.java).newInstance(repository)
-
     }
 }

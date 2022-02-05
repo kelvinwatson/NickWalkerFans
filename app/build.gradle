@@ -62,8 +62,14 @@ dependencies {
     implementation 'io.coil-kt:coil-compose:1.4.0'
 
     // ktor
-    implementation "io.ktor:ktor-client-android:1.6.7"
-
+    def ktor_version = '1.6.4'
+    implementation "io.ktor:ktor-client-core:$ktor_version"
+    // HTTP engine: The HTTP client used to perform network requests.
+    implementation "io.ktor:ktor-client-android:$ktor_version"
+    // The serialization engine used to convert objects to and from JSON.
+    implementation "io.ktor:ktor-client-serialization:$ktor_version"
+    // Logging
+    implementation "io.ktor:ktor-client-logging:$ktor_version"
 
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'

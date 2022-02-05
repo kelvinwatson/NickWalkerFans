@@ -1,9 +1,9 @@
 package com.watsonlogic.nickwalkerfans.feed.repository
 
-import com.watsonlogic.nickwalkerfans.feed.model.PostsFeed
-import com.watsonlogic.nickwalkerfans.feed.model.Result
+import com.watsonlogic.nickwalkerfans.feed.model.Content
+import kotlinx.coroutines.flow.Flow
 
 interface FeedRepository {
 
-    suspend fun getPostsFeed(): Result<PostsFeed>
+    fun getPostsFeed(): Flow<Content>
 }
