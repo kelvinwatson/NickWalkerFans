@@ -5,5 +5,5 @@ import kotlinx.coroutines.flow.Flow
 
 interface FeedRepository {
 
-    fun getPostsFeed(): Flow<Content>
+    fun getContent(): Flow<Content>
 }

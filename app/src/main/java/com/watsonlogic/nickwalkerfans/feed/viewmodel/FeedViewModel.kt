@@ -3,10 +3,13 @@ package com.watsonlogic.nickwalkerfans.feed.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.watsonlogic.nickwalkerfans.feed.repository.FeedRepository
+import com.watsonlogic.nickwalkerfans.feed.model.Content
 import com.watsonlogic.nickwalkerfans.feed.model.UiState
+import com.watsonlogic.nickwalkerfans.feed.repository.FeedRepository
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class FeedViewModel(private val repository: FeedRepository) : ViewModel() {
@@ -15,15 +18,19 @@ class FeedViewModel(private val repository: FeedRepository) : ViewModel() {
     val uiState: StateFlow<UiState>
         get() = _uiState
 
-    fun loadFeed() {
+    init {
 
         viewModelScope.launch {
 
-            repository.getPostsFeed()
+            repository.getContent().collect { content ->
+                _uiState.value = UiState.Ready(content)
+            }
+
         }
     }
 
     class FeedViewModelFactory(private val repository: FeedRepository) : ViewModelProvider.Factory {
+        @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel?> create(modelClass: Class<T>): T =
             FeedViewModel(repository) as T
     }

@@ -13,6 +13,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
 import com.watsonlogic.nickwalkerfans.feed.datasource.InstagramDataSource
 import com.watsonlogic.nickwalkerfans.feed.datasource.YouTubeDataSource
+import com.watsonlogic.nickwalkerfans.feed.remote.YouTubeApiServiceImpl
 import com.watsonlogic.nickwalkerfans.feed.repository.FeedRepository
 import com.watsonlogic.nickwalkerfans.feed.repository.FeedRepositoryImpl
 import com.watsonlogic.nickwalkerfans.feed.viewmodel.FeedViewModel
@@ -96,12 +98,17 @@ fun FeedScreen(
     viewModel: FeedViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
         factory = FeedViewModel.FeedViewModelFactory(
             FeedRepositoryImpl(
-                YouTubeDataSource(),
+                YouTubeDataSource(YouTubeApiServiceImpl()),
                 InstagramDataSource()
             )
         )
     )
 ) {
+
+//    viewModel.loadFeed()
+//
+    val uiState = viewModel.uiState.collectAsState().value
+    print(uiState)
 
     val lazyListScrollState = rememberLazyListState()
 
