@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Nick Walker Fans</string>
+    <string name="retry">Retry</string>
+    <string name="error_generic">An error occurred. Please try again later.</string>
 </resources>
