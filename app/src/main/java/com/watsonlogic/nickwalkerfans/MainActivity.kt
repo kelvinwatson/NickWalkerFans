@@ -124,7 +124,7 @@ fun FeedScreen(
     /**
      * Delegated to [State.getValue].
      */
-    val uiState by lifecycleAwareUiStateFlow.collectAsState(initial = UiState.Loading)
+    val uiState: UiState by lifecycleAwareUiStateFlow.collectAsState(initial = UiState.Loading)
 
     FeedListBridge(uiState)
 }
