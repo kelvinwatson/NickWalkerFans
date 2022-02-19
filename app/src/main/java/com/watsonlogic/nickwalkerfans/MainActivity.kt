@@ -120,43 +120,55 @@ fun FeedScreen(
     val lifecycleAwareUiStateFlow: Flow<UiState> = remember(viewModel.uiState, lifecycleOwner) {
         viewModel.uiState.flowWithLifecycle(lifecycleOwner.lifecycle, Lifecycle.State.STARTED)
     }
-    val uiState: State<UiState> =
-        lifecycleAwareUiStateFlow.collectAsState(initial = UiState.Loading)
+
+    /**
+     * Delegated to [State.getValue].
+     */
+    val uiState by lifecycleAwareUiStateFlow.collectAsState(initial = UiState.Loading)
 
     FeedListBridge(uiState)
 }
 
 @Composable
 fun FeedListBridge(
-    uiState: State<UiState>,
+    uiState: UiState,
     scaffoldState: ScaffoldState = rememberScaffoldState()
 ) {
 
-    // If the UI state contains an error, show snackbar
-    if (uiState.value is UiState.Error) {
-        // `LaunchedEffect` will cancel and re-launch if
-        // `scaffoldState.snackbarHostState` changes
-        val retryActionLabel = stringResource(id = R.string.retry)
-        LaunchedEffect(scaffoldState.snackbarHostState) {
-            // Show snackbar using a coroutine, when the coroutine is cancelled the
-            // snackbar will automatically dismiss. This coroutine will cancel whenever
-            // `state.hasError` is false, and only start when `state.hasError` is true
-            // (due to the above if-check), or if `scaffoldState.snackbarHostState` changes.
-            scaffoldState.snackbarHostState.showSnackbar(
-                message = (uiState.value as UiState.Error).errorMessage,
-                actionLabel = retryActionLabel
-            )
+    when (uiState) {
+        is UiState.Loading -> {
+            // render loading state
         }
-    }
+        is UiState.Empty -> {
+            // render empty state
+        }
+        is UiState.Error -> {
+            // If the UI state contains an error, show snackbar
+            // `LaunchedEffect` will cancel and re-launch if
+            // `scaffoldState.snackbarHostState` changes
+            val retryActionLabel = stringResource(id = R.string.retry)
+            LaunchedEffect(scaffoldState.snackbarHostState) {
+                // Show snackbar using a coroutine, when the coroutine is cancelled the
+                // snackbar will automatically dismiss. This coroutine will cancel whenever
+                // `state.hasError` is false, and only start when `state.hasError` is true
+                // (due to the above if-check), or if `scaffoldState.snackbarHostState` changes.
+                scaffoldState.snackbarHostState.showSnackbar(
+                    message = uiState.errorMessage,
+                    actionLabel = retryActionLabel
+                )
+            }
+        }
+        is UiState.Ready -> {
+            val lazyListScrollState = rememberLazyListState()
 
-    val lazyListScrollState = rememberLazyListState()
-
-    Scaffold(
-        scaffoldState = scaffoldState,
-        topBar = { AppBar() },
-        floatingActionButton = { ScrollToTopFab(lazyListScrollState) }
-    ) {
-        FeedLazyColumn(scrollState = lazyListScrollState)
+            Scaffold(
+                scaffoldState = scaffoldState,
+                topBar = { AppBar() },
+                floatingActionButton = { ScrollToTopFab(lazyListScrollState) }
+            ) {
+                FeedLazyColumn(scrollState = lazyListScrollState)
+            }
+        }
     }
 }
 
