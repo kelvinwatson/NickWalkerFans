@@ -51,7 +51,7 @@ class YouTubeApiServiceImpl(
             parameter(QUERY_KEY_ORDER, QUERY_VALUE_ORDER)
             parameter(QUERY_KEY_TYPE, QUERY_VALUE_TYPE)
             parameter(QUERY_KEY_VIDEO_DEFINITION, QUERY_VALUE_VIDEO_DEFINITION)
-            parameter(QUERY_KEY_API_KEY, BuildConfig.GOOGLE_MAPS_API_KEY)
+            parameter(QUERY_KEY_API_KEY, BuildConfig.YOUTUBE_API_KEY)
         }
         // https://ktor.io/docs/client.html#response
         return response

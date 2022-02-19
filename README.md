@@ -8,3 +8,8 @@ Nick Walker Fans is an Android app built with Jetpack Compose
 
 * KTor (networking)
 * Coil (images)
+
+## Future improvements
+
+* Paging compose integration
+* Move direct YouTube API calls to service side
