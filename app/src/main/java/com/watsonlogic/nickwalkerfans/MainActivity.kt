@@ -33,12 +33,14 @@ import com.watsonlogic.nickwalkerfans.feed.model.UiState
 import com.watsonlogic.nickwalkerfans.feed.remote.YouTubeApiServiceImpl
 import com.watsonlogic.nickwalkerfans.feed.repository.FeedRepositoryImpl
 import com.watsonlogic.nickwalkerfans.feed.viewmodel.FeedViewModel
+import com.watsonlogic.nickwalkerfans.ui.components.CircularIndeterminateProgressBar
 import com.watsonlogic.nickwalkerfans.ui.theme.NickWalkerFansTheme
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
+    @ExperimentalCoroutinesApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -137,7 +139,7 @@ fun FeedListBridge(
 
     when (uiState) {
         is UiState.Loading -> {
-            // render loading state
+            CircularIndeterminateProgressBar()
         }
         is UiState.Empty -> {
             // render empty state
