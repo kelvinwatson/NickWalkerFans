@@ -157,11 +157,3 @@ fun FeedLazyColumn(
         }
     }
 }
-
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    NickWalkerFansTheme {
-        App()
-    }
-}

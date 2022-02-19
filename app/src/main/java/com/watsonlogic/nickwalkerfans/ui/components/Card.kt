@@ -6,6 +6,7 @@ import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -14,12 +15,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
+import com.watsonlogic.nickwalkerfans.App
+import com.watsonlogic.nickwalkerfans.R
 import com.watsonlogic.nickwalkerfans.feed.model.Post
+import com.watsonlogic.nickwalkerfans.feed.model.YouTubePost
+import com.watsonlogic.nickwalkerfans.ui.theme.NickWalkerFansTheme
 
 @Composable
 fun Card(
@@ -39,7 +46,8 @@ fun Card(
         backgroundColor = MaterialTheme.colors.surface,
     ) {
         Column(
-            modifier = Modifier.padding(bottom = 8.dp),
+            modifier = Modifier
+                .fillMaxWidth(),
             verticalArrangement = Arrangement.Top
         ) {
             Image(
@@ -54,41 +62,57 @@ fun Card(
                     .align(Alignment.CenterHorizontally)
             )
 
-            Column {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp, 8.dp, 8.dp, 2.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp)
+            ) {
+
+                Icon(
+                    painter = painterResource(
+                        id = if (isVideo(post)) R.drawable.ic_baseline_play_circle_filled_24 else
+                            R.drawable.ic_baseline_photo_24
+                    ),
+                    contentDescription = null // decorative element
+                )
+
+                Column(
+                    modifier = Modifier.fillMaxWidth().padding(start = 8.dp)
                 ) {
-                    post.title?.run {
-                        Text(
-                            text = this,
-                            style = MaterialTheme.typography.subtitle1,
-                            modifier = Modifier.weight(70f),
-                            maxLines = 2,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    }
                     Text(
-                        text = post.publishDateTime,
-                        style = MaterialTheme.typography.overline.copy(letterSpacing = 0.1.sp),
-                        modifier = Modifier.weight(30f),
-                        textAlign = TextAlign.Right
-                    )
-                }
-                post.description?.trim()?.run {
-                    Text(
-                        text = this,
-                        style = MaterialTheme.typography.caption,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 8.dp),
+                        text = post.title ?: "",
+                        style = MaterialTheme.typography.subtitle1,
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis
+                    )
+                    Text(
+                        text = post.publishDateTime,
+                        style = MaterialTheme.typography.subtitle2,
+                        textAlign = TextAlign.Right
                     )
                 }
             }
         }
+    }
+}
+
+
+private fun isVideo(post: Post) = post is YouTubePost
+
+@Preview(showBackground = true)
+@Composable
+fun DefaultPreview() {
+    NickWalkerFansTheme {
+        Card(
+            YouTubePost(
+                channelId = "channelId",
+                id = "id",
+                title = "title",
+                description = "desc",
+                url = "https://youtube.com/",
+                imageUrl = "https://dummyimage.com/16:9x1080",
+                publishDateTime = "dateTime"
+            )
+        )
     }
 }
