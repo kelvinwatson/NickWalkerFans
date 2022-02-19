@@ -1,3 +1,5 @@
 # Nick Walker Fans
 
-Android app made with Jetpack Compose
+Nick Walker Fans is an Android app built with Jetpack Compose
+
+<img src="screencap.png" width="300">
