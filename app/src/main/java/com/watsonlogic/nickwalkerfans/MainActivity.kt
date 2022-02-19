@@ -14,6 +14,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.layout.ContentScale
@@ -22,6 +23,8 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
@@ -29,6 +32,7 @@ import androidx.lifecycle.flowWithLifecycle
 import coil.compose.rememberImagePainter
 import com.watsonlogic.nickwalkerfans.feed.datasource.InstagramDataSource
 import com.watsonlogic.nickwalkerfans.feed.datasource.YouTubeDataSource
+import com.watsonlogic.nickwalkerfans.feed.model.Post
 import com.watsonlogic.nickwalkerfans.feed.model.UiState
 import com.watsonlogic.nickwalkerfans.feed.remote.YouTubeApiServiceImpl
 import com.watsonlogic.nickwalkerfans.feed.repository.FeedRepositoryImpl
@@ -168,7 +172,7 @@ fun FeedListBridge(
                 topBar = { AppBar() },
                 floatingActionButton = { ScrollToTopFab(lazyListScrollState) }
             ) {
-                FeedLazyColumn(scrollState = lazyListScrollState)
+                FeedLazyColumn(posts = uiState.content.posts, scrollState = lazyListScrollState)
             }
         }
     }
@@ -176,14 +180,7 @@ fun FeedListBridge(
 
 @Composable
 fun FeedLazyColumn(
-    names: List<String> = listOf(
-        "Apples",
-        "Bananas",
-        "Oranges",
-        "Pears",
-        "Peaches",
-        "Eggplants"
-    ),
+    posts: List<Post> = listOf(),
     scrollState: LazyListState
 ) {
 
@@ -191,14 +188,14 @@ fun FeedLazyColumn(
         modifier = Modifier.padding(vertical = 4.dp),
         state = scrollState
     ) {
-        items(items = names) { name ->
-            Card(name)
+        items(items = posts) { post ->
+            Card(post)
         }
     }
 }
 
 @Composable
-fun Card(name: String) {
+fun Card(post: Post) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -206,32 +203,58 @@ fun Card(name: String) {
         backgroundColor = MaterialTheme.colors.surface,
 
         ) {
-        Column {
+        Column(
+            modifier = Modifier.padding(bottom = 8.dp),
+            verticalArrangement = Arrangement.Top
+        ) {
             Image(
                 painter = rememberImagePainter(
-                    data = "https://dummyimage.com/16:9x1080"
+//                    data = "https://dummyimage.com/16:9x1080"
+                    data = post.imageUrl,
                 ),
-                contentScale = ContentScale.FillWidth,
                 contentDescription = null,
+                contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .height(180.dp)
+                    .fillMaxSize()
+                    .align(CenterHorizontally)
             )
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Column {
-                    Text(text = name, style = MaterialTheme.typography.subtitle1)
+
+            Column {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp, 8.dp, 8.dp, 2.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    post.title?.run {
+                        Text(
+                            text = this,
+                            style = MaterialTheme.typography.subtitle1,
+                            modifier = Modifier.weight(70f),
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
                     Text(
-                        text = "Description of the content",
-                        style = MaterialTheme.typography.caption
+                        text = "Dec 19, 2021",
+                        style = MaterialTheme.typography.subtitle2,
+                        modifier = Modifier.weight(25f),
+                        textAlign = TextAlign.Right
                     )
                 }
-                Text(text = "Dec 19, 2021", style = MaterialTheme.typography.subtitle2)
+                post.description?.trim()?.run {
+                    Text(
+                        text = this,
+                        style = MaterialTheme.typography.caption,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 8.dp),
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
             }
-
         }
     }
 }
