@@ -4,6 +4,7 @@ import com.watsonlogic.nickwalkerfans.feed.datasource.InstagramDataSource
 import com.watsonlogic.nickwalkerfans.feed.datasource.YouTubeDataSource
 import com.watsonlogic.nickwalkerfans.feed.model.*
 import com.watsonlogic.nickwalkerfans.feed.model.YouTubePost.Companion.BASE_YOUTUBE_VIDEO_URL
+import com.watsonlogic.nickwalkerfans.newsfeed.iso8601ToFormattedDate
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -31,13 +32,6 @@ class FeedRepositoryImpl(
             when (response) {
                 is YouTubeResponse -> {
                     response.items?.forEach {
-                        // TODO move to helper
-                        val locale = Locale.getDefault()
-                        val desiredFormat = SimpleDateFormat("MMM. dd, yyyy HH:mm", locale)
-                        val isoFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", locale)
-                        val isoString = it.snippet?.publishTime ?: isoFormat.format(Date())
-                        val date = isoFormat.parse(isoString)
-                        val dateString = desiredFormat.format(date)
                         youTubePosts.add(
                             YouTubePost(
                                 channelId = it.snippet?.channelId,
@@ -46,7 +40,7 @@ class FeedRepositoryImpl(
                                 description = it.snippet?.description,
                                 url = "${BASE_YOUTUBE_VIDEO_URL}${it.id?.videoId}",
                                 imageUrl = it.snippet?.thumbnails?.high?.url, // choose high def by default
-                                publishDateTime = dateString
+                                publishDateTime = it.snippet?.publishTime.iso8601ToFormattedDate()
                             )
                         )
                     }
