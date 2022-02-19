@@ -1,19 +1,14 @@
 package com.watsonlogic.nickwalkerfans.feed.viewmodel
 
-import android.app.Application
-import android.content.Context
 import android.content.res.Resources
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.watsonlogic.nickwalkerfans.R
-import com.watsonlogic.nickwalkerfans.feed.model.Content
 import com.watsonlogic.nickwalkerfans.feed.model.UiState
 import com.watsonlogic.nickwalkerfans.feed.repository.FeedRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
 
 @ExperimentalCoroutinesApi
 class FeedViewModel(

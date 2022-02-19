@@ -7,7 +7,7 @@ sealed class Post {
     abstract val description: String?
     abstract val url: String?
     abstract val imageUrl: String?
-    abstract val publishDateTime: String?
+    abstract val publishDateTime: String
 }
 
 data class YouTubePost(
@@ -18,7 +18,7 @@ data class YouTubePost(
     override val description: String? = null,
     override val url: String? = null,
     override val imageUrl: String? = null,
-    override val publishDateTime: String? = null
+    override val publishDateTime: String
 ) : Post() {
     companion object {
         const val BASE_YOUTUBE_VIDEO_URL = "https://www.youtube.com/watch?v="

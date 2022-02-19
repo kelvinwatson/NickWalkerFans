@@ -11,7 +11,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -34,7 +33,7 @@ fun AppBar() {
 
             Text(
                 text = stringResource(id = R.string.app_name),
-                style = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.ExtraBold)
+                style = MaterialTheme.typography.h5
             )
         }
     }
