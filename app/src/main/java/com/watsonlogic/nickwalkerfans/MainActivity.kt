@@ -3,7 +3,7 @@ package com.watsonlogic.nickwalkerfans
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -21,6 +22,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
 import com.watsonlogic.nickwalkerfans.feed.datasource.InstagramDataSource
 import com.watsonlogic.nickwalkerfans.feed.datasource.YouTubeDataSource
+import com.watsonlogic.nickwalkerfans.feed.model.Content
 import com.watsonlogic.nickwalkerfans.feed.model.Post
 import com.watsonlogic.nickwalkerfans.feed.model.UiState
 import com.watsonlogic.nickwalkerfans.feed.remote.YouTubeApiServiceImpl
@@ -137,9 +139,20 @@ fun FeedListBridge(
             Scaffold(
                 scaffoldState = scaffoldState,
                 topBar = { AppBar() },
-                floatingActionButton = { ScrollToTopFab(viewModel, uiState.content.youTubeNextPageToken, lazyListScrollState) }
+//                floatingActionButton = {
+//                    ScrollToTopFab(
+//                        viewModel,
+//                        uiState.content.youTubeNextPageToken,
+//                        lazyListScrollState
+//                    )
+//                }
             ) {
-                FeedLazyColumn(posts = uiState.content.posts, scrollState = lazyListScrollState)
+
+                FeedLazyColumn(
+                    viewModel = viewModel,
+                    content = uiState.content,
+                    scrollState = lazyListScrollState
+                )
             }
         }
     }
@@ -147,16 +160,32 @@ fun FeedListBridge(
 
 @Composable
 fun FeedLazyColumn(
-    posts: List<Post> = listOf(),
+    viewModel: FeedViewModel,
+    content: Content,
     scrollState: LazyListState
 ) {
 
-    LazyColumn(
-        modifier = Modifier.padding(vertical = 4.dp),
-        state = scrollState
-    ) {
-        items(items = posts) { post ->
-            com.watsonlogic.nickwalkerfans.ui.components.Card(post)
+    Column(modifier = Modifier.fillMaxSize()) {
+        LazyColumn(
+            modifier = Modifier
+                .weight(1f)
+                .padding(vertical = 4.dp),
+            state = scrollState
+        ) {
+            items(items = content.posts) { post ->
+                com.watsonlogic.nickwalkerfans.ui.components.Card(post)
+            }
+            item {
+                Row(Modifier.fillMaxSize(), horizontalArrangement = Arrangement.Center) {
+                    Button(onClick = {
+                        content.youTubeNextPageToken?.run { viewModel.setNextPageToken(this) }
+                    }) {
+                        Text(stringResource(id = R.string.load_more))
+                        Icon(imageVector = Icons.Filled.MoreVert, contentDescription = "")
+                    }
+                }
+            }
         }
     }
+
 }
