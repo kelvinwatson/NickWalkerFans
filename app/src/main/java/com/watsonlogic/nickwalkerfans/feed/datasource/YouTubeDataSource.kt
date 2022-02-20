@@ -18,7 +18,8 @@ class YouTubeDataSource(private val apiService: YouTubeApiService) :
 
     override fun getContent(): Flow<YouTubeResponse> = flow {
         nextPageToken.collect {
-            emit(apiService.getYouTubeSnippets(it))
+            val response = apiService.getYouTubeSnippets(it)
+            emit(response)
         }
     }
 }
