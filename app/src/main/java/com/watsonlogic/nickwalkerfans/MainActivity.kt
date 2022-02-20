@@ -10,6 +10,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.runtime.*
@@ -181,7 +182,7 @@ fun FeedLazyColumn(
                         content.youTubeNextPageToken?.run { viewModel.setNextPageToken(this) }
                     }) {
                         Text(stringResource(id = R.string.load_more))
-                        Icon(imageVector = Icons.Filled.MoreVert, contentDescription = "")
+                        Icon(imageVector = Icons.Filled.ArrowDropDown, contentDescription = "")
                     }
                 }
             }
