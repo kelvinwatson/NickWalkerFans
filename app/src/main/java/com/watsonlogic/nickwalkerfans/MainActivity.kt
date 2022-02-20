@@ -16,7 +16,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
@@ -31,7 +30,6 @@ import com.watsonlogic.nickwalkerfans.ui.components.CircularIndeterminateProgres
 import com.watsonlogic.nickwalkerfans.ui.theme.NickWalkerFansTheme
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     @ExperimentalCoroutinesApi
@@ -47,14 +45,18 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun ScrollToTopFab(scrollState: LazyListState) {
+fun ScrollToTopFab(viewModel: FeedViewModel, nextPageToken: String?, scrollState: LazyListState) {
 
     val coroutineScope = rememberCoroutineScope()
 
     FloatingActionButton(onClick = {
 
-        coroutineScope.launch {
-            scrollState.animateScrollToItem(0)
+//        coroutineScope.launch {
+//            scrollState.animateScrollToItem(0)
+//        }
+        nextPageToken?.run {
+
+            viewModel.setNextPageToken(nextPageToken)
         }
     }) {
         Icon(imageVector = Icons.Filled.KeyboardArrowUp, contentDescription = "")
@@ -96,11 +98,12 @@ fun FeedScreen(
      */
     val uiState: UiState by lifecycleAwareUiStateFlow.collectAsState(initial = UiState.Loading)
 
-    FeedListBridge(uiState)
+    FeedListBridge(viewModel, uiState)
 }
 
 @Composable
 fun FeedListBridge(
+    viewModel: FeedViewModel,
     uiState: UiState,
     scaffoldState: ScaffoldState = rememberScaffoldState()
 ) {
@@ -134,7 +137,7 @@ fun FeedListBridge(
             Scaffold(
                 scaffoldState = scaffoldState,
                 topBar = { AppBar() },
-                floatingActionButton = { ScrollToTopFab(lazyListScrollState) }
+                floatingActionButton = { ScrollToTopFab(viewModel, uiState.content.youTubeNextPageToken, lazyListScrollState) }
             ) {
                 FeedLazyColumn(posts = uiState.content.posts, scrollState = lazyListScrollState)
             }

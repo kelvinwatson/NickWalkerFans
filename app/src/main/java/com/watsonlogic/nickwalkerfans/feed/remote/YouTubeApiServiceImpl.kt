@@ -17,7 +17,7 @@ class YouTubeApiServiceImpl(
      *   https://developers.google.com/youtube/v3/docs/search/list?apix=true&apix_params=%7B%22part%22%3A%5B%22snippet%22%5D%2C%22channelId%22%3A%22UCotK4Y3BtGTdt7qzFR3vI1A%22%2C%22order%22%3A%22viewCount%22%2C%22type%22%3A%5B%22video%22%5D%2C%22videoDefinition%22%3A%22high%22%7D
      *   https://developers.google.com/youtube/v3/docs/search/list#usage
      */
-    override suspend fun getYouTubeSnippets(): YouTubeResponse {
+    override suspend fun getYouTubeSnippets(nextPageToken: String?): YouTubeResponse {
         val response = client.get<YouTubeResponse>(ApiRoutes.YOU_TUBE_SEARCH_URL) {
             method = HttpMethod.Get
             parameter(QUERY_KEY_PART, QUERY_VALUE_SNIPPET)
@@ -26,6 +26,9 @@ class YouTubeApiServiceImpl(
             parameter(QUERY_KEY_TYPE, QUERY_VALUE_TYPE)
             parameter(QUERY_KEY_VIDEO_DEFINITION, QUERY_VALUE_VIDEO_DEFINITION)
             parameter(QUERY_KEY_API_KEY, BuildConfig.YOUTUBE_API_KEY)
+            nextPageToken?.run {
+                parameter("pageToken", nextPageToken)
+            }
         }
         // https://ktor.io/docs/client.html#response
         return response

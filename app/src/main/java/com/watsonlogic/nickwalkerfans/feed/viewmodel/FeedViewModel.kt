@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.watsonlogic.nickwalkerfans.R
+import com.watsonlogic.nickwalkerfans.feed.model.Content
 import com.watsonlogic.nickwalkerfans.feed.model.UiState
 import com.watsonlogic.nickwalkerfans.feed.repository.FeedRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -16,9 +17,11 @@ class FeedViewModel(
     private val repository: FeedRepository
 ) : ViewModel() {
 
+    private val _content = MutableStateFlow<Content>(Content())
     private val _uiState: StateFlow<UiState> = repository.getContent()
         .mapLatest { content ->
-            UiState.Ready(content)
+            _content.value = _content.value + content
+            UiState.Ready(_content.value)
         }.catch { cause ->
             UiState.Error(cause.message ?: resources.getString(R.string.error_generic))
         }.stateIn(
@@ -28,6 +31,10 @@ class FeedViewModel(
         )
     val uiState: StateFlow<UiState>
         get() = _uiState
+
+    fun setNextPageToken(nextPageToken: String) {
+        repository.setNextPageToken(nextPageToken)
+    }
 
     class FeedViewModelFactory(
         private val resources: Resources,
@@ -42,3 +49,8 @@ class FeedViewModel(
         const val SUBSCRIBE_TIMEOUT_FOR_CONFIG_CHANGE = 5000L
     }
 }
+
+private operator fun Content.plus(content: Content): Content = Content(
+    posts = this.posts + content.posts,
+    youTubeNextPageToken = content.youTubeNextPageToken
+)

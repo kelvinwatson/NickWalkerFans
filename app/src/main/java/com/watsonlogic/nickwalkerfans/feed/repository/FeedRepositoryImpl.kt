@@ -9,8 +9,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOn
-import java.text.SimpleDateFormat
-import java.util.*
 
 class FeedRepositoryImpl(
     private val youTubeDataSource: YouTubeDataSource,
@@ -22,12 +20,16 @@ class FeedRepositoryImpl(
             combineFeeds(youTubeFeed, instagramFeed)
         }.flowOn(Dispatchers.IO)
 
+    override fun setNextPageToken(nextPageToken: String) =
+        youTubeDataSource.setNextPageToken(nextPageToken)
+
     private fun getYouTubeFeed(): Flow<YouTubeResponse> = youTubeDataSource.getContent()
 
     private fun getInstagramFeed(): Flow<Response> = instagramDataSource.getContent()
 
     private fun combineFeeds(vararg feeds: Response): Content {
         val youTubePosts = mutableListOf<Post>()
+        var youTubeNextPageToken: String? = null
         feeds.forEach { response ->
             when (response) {
                 is YouTubeResponse -> {
@@ -44,10 +46,14 @@ class FeedRepositoryImpl(
                             )
                         )
                     }
+                    youTubeNextPageToken = response.nextPageToken
                 }
             }
         }
-        return Content(posts = youTubePosts)  // todo amalgamate responses
+        return Content(
+            posts = youTubePosts,
+            youTubeNextPageToken = youTubeNextPageToken
+        )  // todo amalgamate responses
     }
 
     companion object {
