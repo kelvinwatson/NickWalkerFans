@@ -1,65 +1,71 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
-    id 'com.android.application'
-    id 'kotlin-android'
-    id "org.jetbrains.kotlin.plugin.serialization"
+    id("com.android.application")
+    id("kotlin-android")
+    id("org.jetbrains.kotlin.plugin.serialization")
 }
 
-def apikeyPropertiesFile = rootProject.file("apikey.properties")
-def apikeyProperties = new Properties()
-apikeyProperties.load(new FileInputStream(apikeyPropertiesFile))
+val apikeyPropertiesFile = rootProject.file("apikey.properties")
+val apikeyProperties = Properties()
+apikeyProperties.load(FileInputStream(apikeyPropertiesFile))
 
 android {
-    compileSdk 34
+    compileSdk = 34
 
     defaultConfig {
-        applicationId "com.watsonlogic.nickwalkerfans"
-        minSdk 21
-        targetSdk 34
-        versionCode 4
-        versionName "1.1"
+        applicationId = "com.watsonlogic.nickwalkerfans"
+        minSdk = 21
+        targetSdk = 34
+        versionCode = 4
+        versionName = "1.1"
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
-            useSupportLibrary true
+            useSupportLibrary = true
         }
 
-        buildConfigField("String", "YOUTUBE_API_KEY", apikeyProperties["YOUTUBE_API_KEY"])
+        buildConfigField("String", "YOUTUBE_API_KEY", apikeyProperties["YOUTUBE_API_KEY"] as String)
     }
 
     buildTypes {
-        release {
+        getByName("release") {
             // Enables code shrinking, obfuscation, and optimization for only
             // your project's release build type.
-            minifyEnabled false
+            isMinifyEnabled = false
             // Includes the default ProGuard rules files that are packaged with
             // the Android Gradle plugin. To learn more, go to the section about
             // R8 configuration files.
-            proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
+            )
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
     }
     kotlinOptions {
         jvmTarget = "1.8"
     }
     buildFeatures {
-        compose true
+        compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion "$composeVersion"
+        val composeVersion: String by rootProject.extra
+        kotlinCompilerExtensionVersion = composeVersion
     }
-    packagingOptions {
+    packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
-    namespace 'com.watsonlogic.nickwalkerfans'
+    namespace = "com.watsonlogic.nickwalkerfans"
 }
 
 dependencies {
-    implementation platform("androidx.compose:compose-bom:2023.08.00")
+    implementation(platform("androidx.compose:compose-bom:2023.08.00"))
     implementation("androidx.compose.material:material")
     implementation("androidx.compose.ui:ui-test-junit4")
     implementation("androidx.compose.ui:ui-tooling")
@@ -67,23 +73,25 @@ dependencies {
     implementation("androidx.core:core-ktx:1.10.1")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.9.0")
+
+    val lifecycleVersion: String by rootProject.extra
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycleVersion")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycleVersion")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:$lifecycleVersion")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:$lifecycleVersion")// collectAsStateWithLifecycle
     implementation("androidx.activity:activity-compose:1.7.2")
 
+    val coilVersion: String by rootProject.extra
     implementation("io.coil-kt:coil-compose:$coilVersion")
 
     // ktor
+    val ktorVersion: String by rootProject.extra
     // source: https://www.section.io/engineering-education/making-http-requests-with-ktor-in-android/
     implementation("io.ktor:ktor-client-core:$ktorVersion")
     // HTTP engine: The HTTP client used to perform network requests.
     implementation("io.ktor:ktor-client-android:$ktorVersion")
     // The serialization engine used to convert objects to and from JSON.
     implementation("io.ktor:ktor-client-serialization:$ktorVersion")
-    //serialize and deserialize JSON data
-//    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$serializationJsonVersion")
     // Content negotiation for JSON
     implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
     //serialize/deserialize JSON data
