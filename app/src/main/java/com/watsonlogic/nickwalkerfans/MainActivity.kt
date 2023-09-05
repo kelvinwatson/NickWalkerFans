@@ -23,15 +23,11 @@ import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.flowWithLifecycle
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.watsonlogic.nickwalkerfans.feed.datasource.YouTubeDataSource
 import com.watsonlogic.nickwalkerfans.feed.model.Content
 import com.watsonlogic.nickwalkerfans.feed.model.UiState
@@ -41,7 +37,6 @@ import com.watsonlogic.nickwalkerfans.feed.viewmodel.FeedViewModel
 import com.watsonlogic.nickwalkerfans.ui.components.CircularIndeterminateProgressBar
 import com.watsonlogic.nickwalkerfans.ui.theme.NickWalkerFansTheme
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.Flow
 
 class MainActivity : ComponentActivity() {
     @ExperimentalCoroutinesApi
@@ -75,19 +70,11 @@ fun FeedScreen(
     )
 ) {
 
-    val lifecycleOwner = LocalLifecycleOwner.current
-
-    /**
-     * Scoped to lifecycle of this composable.
-     */
-    val lifecycleAwareUiStateFlow: Flow<UiState> = remember(viewModel.uiState, lifecycleOwner) {
-        viewModel.uiState.flowWithLifecycle(lifecycleOwner.lifecycle, Lifecycle.State.STARTED)
-    }
 
     /**
      * Delegated to [State.getValue].
      */
-    val uiState: UiState by lifecycleAwareUiStateFlow.collectAsState(initial = UiState.Loading)
+    val uiState: UiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     FeedListBridge(viewModel, uiState)
 }
