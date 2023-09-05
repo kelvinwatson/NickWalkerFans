@@ -16,37 +16,39 @@ class FeedViewModel(
     private val resources: Resources,
     private val repository: FeedRepository
 ) : ViewModel() {
+    private val _pageToken = MutableStateFlow<String?>(null)
 
-    private val _content = MutableStateFlow<Content>(Content())
-    private val _uiState: StateFlow<UiState> = repository.getContent()
-        .mapLatest { content ->
-            _content.value = _content.value + content
-            UiState.Ready(_content.value)
-        }.catch { cause ->
-            UiState.Error(cause.message ?: resources.getString(R.string.error_generic))
-        }.stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(stopTimeoutMillis = SUBSCRIBE_TIMEOUT_FOR_CONFIG_CHANGE),
-            initialValue = UiState.Loading
-        )
+    private val _content = MutableStateFlow(Content())
+    private val _uiState: StateFlow<UiState> = _pageToken.flatMapLatest {
+        println("uiState, calling repository with $it")
+        repository.getContent(it)
+    }.map { content ->
+        println("uiState, mapping content with $content")
+        _content.value = _content.value + content
+        UiState.Ready(_content.value)
+    }.catch { cause ->
+        println("uiState, error with $cause")
+        UiState.Error(cause.message ?: resources.getString(R.string.error_generic))
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.Eagerly,
+        initialValue = UiState.Loading
+    )
+
+    fun setPageToken(nextPage: String? = null) {
+        _pageToken.value = nextPage
+    }
+
     val uiState: StateFlow<UiState>
         get() = _uiState
-
-    fun setNextPageToken(nextPageToken: String) {
-        repository.setNextPageToken(nextPageToken)
-    }
 
     class FeedViewModelFactory(
         private val resources: Resources,
         private val repository: FeedRepository
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel?> create(modelClass: Class<T>): T =
+        override fun <T : ViewModel> create(modelClass: Class<T>): T =
             FeedViewModel(resources, repository) as T
-    }
-
-    companion object {
-        const val SUBSCRIBE_TIMEOUT_FOR_CONFIG_CHANGE = 5000L
     }
 }
 

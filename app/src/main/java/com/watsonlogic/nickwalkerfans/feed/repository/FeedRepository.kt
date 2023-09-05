@@ -5,7 +5,5 @@ import kotlinx.coroutines.flow.Flow
 
 interface FeedRepository {
 
-    fun getContent(): Flow<Content>
-
-    fun setNextPageToken(nextPageToken: String)
+   fun getContent(nextPage: String? = null): Flow<Content>
 }

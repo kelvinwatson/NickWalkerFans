@@ -1,18 +1,20 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
     ext {
-        compose_version = "1.0.1"
-        kotlin_version = '1.6.21'
-        ktor_version = "2.3.3"
-        serialization_version = "1.6.10"
+        coilVersion = "2.4.0"
+        composeVersion = "1.5.3"
+        kotlinVersion = "1.9.10"
+        ktorVersion = "2.3.3"
+        serializationPluginVersion = "1.6.10"
+        serializationJsonVersion = "1.6.0"
     }
     repositories {
         google()
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.4.2'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath 'com.android.tools.build:gradle:8.1.1'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -20,9 +22,9 @@ buildscript {
 }
 
 plugins {
-    id "org.jetbrains.kotlin.plugin.serialization" version "$serialization_version"
+    id "org.jetbrains.kotlin.plugin.serialization" version "$serializationPluginVersion"
 }
 
-task clean(type: Delete) {
+tasks.register("clean", Delete.class) {
     delete rootProject.buildDir
 }

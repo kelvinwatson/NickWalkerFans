@@ -1,25 +1,15 @@
 package com.watsonlogic.nickwalkerfans.feed.datasource
 
 import com.watsonlogic.nickwalkerfans.feed.model.YouTubeResponse
-import com.watsonlogic.nickwalkerfans.feed.remote.YouTubeApiService
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.flow
+import com.watsonlogic.nickwalkerfans.feed.remote.YouTubeDataService
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
-class YouTubeDataSource(private val apiService: YouTubeApiService) :
+class YouTubeDataSource(private val apiService: YouTubeDataService) :
     RemoteDataSource<YouTubeResponse> {
 
-    private val nextPageToken = MutableStateFlow<String?>(null)
-
-    fun setNextPageToken(nextPageToken: String) {
-        this.nextPageToken.value = nextPageToken
-    }
-
-    override fun getContent(): Flow<YouTubeResponse> = flow {
-        nextPageToken.collect {
-            val response = apiService.getYouTubeSnippets(it)
-            emit(response)
+    override suspend fun getContent(nextPage: String?): YouTubeResponse =
+        withContext(Dispatchers.IO) {
+            apiService.getYouTubeSnippets(nextPage)
         }
-    }
 }
